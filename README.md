@@ -1,7 +1,11 @@
 # soundex
-Soundex phonetic algorithm for name matching. Zero dependencies.
+
+Compute Soundex phonetic code for names.
+
+Zero dependencies. Python 3.8+.
+
 ## Usage
+
 ```bash
-python3 soundex.py Robert Rupert
-python3 soundex.py match "Smith" "Smyth"
+python3 soundex.py --help
 ```
