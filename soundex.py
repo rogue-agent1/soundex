@@ -1,22 +1,38 @@
 #!/usr/bin/env python3
-"""soundex - Compute Soundex phonetic code for names."""
-import sys
+"""soundex - Soundex phonetic encoding algorithm."""
+import argparse
 
-MAP = {"B":"1","F":"1","P":"1","V":"1","C":"2","G":"2","J":"2","K":"2","Q":"2","S":"2","X":"2","Z":"2","D":"3","T":"3","L":"4","M":"5","N":"5","R":"6"}
+SOUNDEX_MAP = {c: d for chars, d in [
+    ("BFPV", "1"), ("CGJKQSXZ", "2"), ("DT", "3"),
+    ("L", "4"), ("MN", "5"), ("R", "6")
+] for c in chars}
 
-def soundex(name):
-    name = "".join(c for c in name.upper() if c.isalpha())
+def soundex(name: str) -> str:
+    name = name.upper().strip()
     if not name: return ""
-    code = [name[0]]
-    prev = MAP.get(name[0], "0")
+    result = [name[0]]
+    prev = SOUNDEX_MAP.get(name[0], "0")
     for c in name[1:]:
-        d = MAP.get(c, "0")
-        if d != "0" and d != prev: code.append(d)
-        if d != "0": prev = d
-        else: prev = "0"
-        if len(code) == 4: break
-    return "".join(code).ljust(4, "0")
+        code = SOUNDEX_MAP.get(c, "0")
+        if code != "0" and code != prev:
+            result.append(code)
+        if c not in "HW":
+            prev = code
+    return "".join(result)[:4].ljust(4, "0")
+
+def main():
+    p = argparse.ArgumentParser(description="Soundex encoding")
+    p.add_argument("names", nargs="+")
+    p.add_argument("-c", "--compare", action="store_true", help="Compare pairs")
+    args = p.parse_args()
+    if args.compare and len(args.names) >= 2:
+        s1, s2 = soundex(args.names[0]), soundex(args.names[1])
+        print(f"{args.names[0]} -> {s1}")
+        print(f"{args.names[1]} -> {s2}")
+        print(f"Match: {s1 == s2}")
+    else:
+        for name in args.names:
+            print(f"{name} -> {soundex(name)}")
 
 if __name__ == "__main__":
-    if len(sys.argv) < 2: print("Usage: soundex <name> [name...]"); sys.exit(1)
-    for n in sys.argv[1:]: print(f"{n}: {soundex(n)}")
+    main()

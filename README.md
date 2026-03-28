@@ -1,6 +1,6 @@
 # soundex
 
-Compute Soundex phonetic code for names.
+Soundex phonetic encoding algorithm.
 
 Zero dependencies. Python 3.8+.
 
